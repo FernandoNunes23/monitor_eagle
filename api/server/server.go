@@ -5,8 +5,6 @@ import (
 	"log"
 	"api/server/router"
 	"github.com/sevlyar/go-daemon"
-	"time"
-	"fmt"
 )
 
 func Init() {
@@ -31,15 +29,6 @@ func Init() {
 
 	log.Print("- - - - - - - - - - - - - - -")
 	log.Print("daemon started")
-
-	duration := time.Duration(5 * time.Second)
-	ticker := time.NewTicker(duration)
-
-	go func() {
-        for t := range ticker.C {
-            fmt.Println("Tick at", t)
-        }
-    }()
 
 	r := router.NewRouter()
 

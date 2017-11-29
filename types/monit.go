@@ -3,6 +3,7 @@ package types
 type MonitConfig struct {
 	Type 	 string	`json:"type"`
 	Resource string	`json:"resource"`
+	Time	 string	`json:"time"`
 }
 
 type Monit struct {

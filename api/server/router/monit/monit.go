@@ -12,6 +12,7 @@ import (
 	"os"
 	"log"
 	"parser"
+	"time"
 )
 
 func CreateMonit(w http.ResponseWriter, r *http.Request) {
@@ -19,6 +20,7 @@ func CreateMonit(w http.ResponseWriter, r *http.Request) {
 
 	config.Type 	= r.PostFormValue("configType")
 	config.Resource = r.PostFormValue("configResource")
+	config.Time     = r.PostFormValue("configTime")
 
 	createMonit(r.PostFormValue("name"), config)
 
@@ -63,19 +65,26 @@ func launchMonit(name string) {
 	m := getMonitInfo(name)
 
 	if m.Config.Resource == "memory" {
+		go startLoggingMemory(m)
+	}
+}
+
+func startLoggingMemory(m types.Monit) {
+	duration := time.Duration(5 * time.Second)
+	ticker := time.NewTicker(duration)
+	for t := range ticker.C {
 		mem := getMemoryInfo()
-		logger.Init("/tmp/eagle/" + name)
+		logger.Init("/tmp/eagle/" + m.Name)
 		
 		memJson, err := json.Marshal(mem); if err != nil {
 			fmt.Print(err)
 		}
 
 		s := string(memJson[:])
-
+		fmt.Println("Logging at", t)
 		logger.Log(s)
-	}
+    }
 }
-
 
 func createMonit(name string, config types.MonitConfig) {
 	monit.NewMonit(name, config)
